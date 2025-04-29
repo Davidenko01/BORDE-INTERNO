@@ -28,64 +28,46 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-        <Text style={styles.link}>No tenés cuenta? Registrate</Text>
-      </TouchableOpacity>
+    <View className="flex-1 justify-center items-center bg-[#251f31] px-6">
+      <Text className="text-5xl font-extrabold text-green-400 tracking-widest mb-10 text-center drop-shadow-md">
+        BORDE <Text className="text-white">INTERNO</Text>
+      </Text>
+      <View className="bg-[#333751] w-full rounded-2xl p-6 shadow-lg max-w-md">
+        <Text className="text-3xl font-bold text-center text-[#09e984] mb-6">
+          Iniciar Sesión
+        </Text>
+
+        <TextInput
+          className="p-4 rounded-xl mb-4 text-black bg-[#534b6b] shadow-lg"
+          placeholder="Email"
+          placeholderTextColor="#dae9e2"
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+        />
+        <TextInput
+          className="p-4 rounded-xl mb-6 text-black bg-[#534b6b] shadow-lg"
+          placeholder="Contraseña"
+          placeholderTextColor="#dae9e2"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+        <TouchableOpacity
+          className="bg-[#09e984] p-4 rounded-xl mb-4 shadow-lg"
+          onPress={handleLogin}
+        >
+          <Text className="text-black text-center font-bold text-lg">
+            Entrar
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+          <Text className="text-center text-[#09e984] font-medium">
+            ¿No tenés cuenta? <Text className="underline">Registrate</Text>
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 20,
-    backgroundColor: 'white',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 15,
-  },
-  button: {
-    backgroundColor: '#007bff',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  buttonText: {
-    color: 'white',
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-  link: {
-    color: '#007bff',
-    textAlign: 'center',
-  },
-});
