@@ -1,17 +1,6 @@
 import React from 'react';
 import { View, Text, Image } from 'react-native';
-
-type TeamProps = {
-  name: string;
-  logo: string;
-  goals: number;
-};
-
-type MatchCardProps = {
-  homeTeam: TeamProps;
-  awayTeam: TeamProps;
-  date: string;
-};
+import { MatchCardProps } from '../types/partido';
 
 const MatchCard = ({ homeTeam, awayTeam, date }: MatchCardProps) => {
   const homeWins = homeTeam.goals > awayTeam.goals;
@@ -40,8 +29,9 @@ const MatchCard = ({ homeTeam, awayTeam, date }: MatchCardProps) => {
     <View className="bg-white mx-4 rounded-lg shadow-sm border border-gray-200 p-4">
       <View className="flex-row items-center">
         
-        {/* Home Team Section - Fixed width */}
+        {/* Equipo Local */}
         <View className="w-20 relative">
+          {/* Barra lateral: Verde ganó, Rojo perdió */}
           {homeWins && (
             <View className="absolute -left-4 top-0 bottom-0 w-1 bg-green-500 rounded-full" />
           )}
@@ -64,14 +54,14 @@ const MatchCard = ({ homeTeam, awayTeam, date }: MatchCardProps) => {
           </View>
         </View>
 
-        {/* Home Score - Fixed width */}
+        {/* Goles Local */}
         <View className="w-12 items-center">
           <Text className="text-xl font-bold text-gray-900">
             {homeTeam.goals}
           </Text>
         </View>
 
-        {/* Match Info - Flexible center */}
+        {/* Fecha */}
         <View className="flex-1 items-center px-2">
           <Text className="text-xs font-medium text-gray-700 text-center mb-1">
             {formatDate(date)}
@@ -81,15 +71,16 @@ const MatchCard = ({ homeTeam, awayTeam, date }: MatchCardProps) => {
           </Text>
         </View>
 
-        {/* Away Score - Fixed width */}
+        {/* Goles Visitante */}
         <View className="w-12 items-center">
           <Text className="text-xl font-bold text-gray-900">
             {awayTeam.goals}
           </Text>
         </View>
 
-        {/* Away Team Section - Fixed width */}
+        {/* Equipo Visitante */}
         <View className="w-20 relative">
+          {/* Barra lateral: Verde ganó, Rojo perdió */}
           {awayWins && (
             <View className="absolute -right-4 top-0 bottom-0 w-1 bg-green-500 rounded-full" />
           )}

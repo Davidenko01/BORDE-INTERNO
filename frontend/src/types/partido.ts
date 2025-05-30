@@ -1,4 +1,4 @@
-export type Partido = {
+type Partido = {
   date: string;
   id: number;
   homeTeam: {
@@ -22,4 +22,16 @@ export type Partidos = {
   team: string,
   competition: string,
   matches: Partido[],
+};
+
+type TeamProps = {
+  name: string;
+  logo: string;
+  goals: number;
+};
+
+export type MatchCardProps = {
+  homeTeam: TeamProps;
+  awayTeam: TeamProps;
+  date: string;
 };

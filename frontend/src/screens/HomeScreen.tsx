@@ -16,6 +16,8 @@ export default function HomeScreen() {
   const { data: ligas, isLoading, error } = useQuery<Liga[]>({
     queryKey: ["ligas"],
     queryFn: fetchLigas,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5, // 5 minutos
   });
 
   return (

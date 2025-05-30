@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
-  SafeAreaView,
 } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -14,9 +13,12 @@ import MatchCard from '../components/MatchCard';
 import { RootStackParamList } from '../navigation/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Partidos } from '../types/partido';
+import NavBar from '../components/navBar';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 async function fetchMatchData(teamId: number, competitionId: number): Promise<Partidos> {
+  console.log("fetching matches");
   const response = await fetch(
     `http://192.168.0.97:3001/api/partidos/?liga=${competitionId}&equipo=${teamId}`
   );
@@ -28,9 +30,9 @@ export default function TeamMatchesScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute();
   const { teamId, competitionId } = route.params as {teamId: number, competitionId: number};
-  const [displayedMatches, setDisplayedMatches] = useState(5);
+  const [displayedMatches, setDisplayedMatches] = useState(10);
 
-  // Fetch team matches using React Query
+  // Fetch Partidos del equipo en la competición
   const {
     data: matchesData,
     isLoading,
@@ -39,8 +41,11 @@ export default function TeamMatchesScreen() {
   } = useQuery({
     queryKey: ['teamMatches', teamId, competitionId],
     queryFn: () => fetchMatchData(teamId, competitionId),
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5, // 5 minutos
   });
 
+  //Cuando se pulsa el boton de cargar mas
   const handleLoadMore = () => {
     setDisplayedMatches(prev => Math.min(prev + 5, matchesData?.matches?.length || 0));
   };
@@ -75,23 +80,22 @@ if (isLoading) {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
-
-      <View className="bg-white border-b border-gray-200 px-2 py-4">
-        <Text className="text-2xl font-bold text-gray-900 text-center">
-          Partidos - {team || 'Team'}
-        </Text>
-        <Text className="text-sm text-gray-600 text-center mt-1">
-          {competition || 'Competition'} • {matches.length} matches
-        </Text>
-      </View>
-
+      <NavBar />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <View className="bg-white border-b border-gray-200 px-2 py-4">
+          <Text className="text-2xl font-bold text-gray-900 text-center">
+            Partidos - {team || 'Team'}
+          </Text>
+          <Text className="text-sm text-gray-600 text-center mt-1">
+            {competition || 'Competition'} • {matches.length} matches
+          </Text>
+        </View>
         <View className="py-4">
           {visibleMatches.length === 0 ? (
             <View className="flex-1 justify-center items-center py-20">
               <Text className="text-gray-500 text-lg">No matches found</Text>
               <Text className="text-gray-400 text-sm mt-2">
-                This team has no matches in this competition yet.
+                No hay partidos de este equipo para esta competición.
               </Text>
             </View>
           ) : (
@@ -132,7 +136,7 @@ if (isLoading) {
               {!hasMoreMatches && matches.length > 5 && (
                 <View className="px-4 py-6">
                   <Text className="text-gray-500 text-center text-sm">
-                    You've reached the end of the matches list
+                    No hay más partidos para mostrar.
                   </Text>
                 </View>
               )}

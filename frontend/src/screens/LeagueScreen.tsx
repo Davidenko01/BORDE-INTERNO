@@ -38,6 +38,8 @@ export default function LeagueScreen() {
   } = useQuery<LigaCompleta>({
     queryKey: ["league", id],
     queryFn: () => fetchLeagueData(id),
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5, // 5 minutos
   });
 
   if (isLoading) {
@@ -73,14 +75,7 @@ export default function LeagueScreen() {
     <SafeAreaView className="flex-1 bg-gray-50">
       <NavBar/>
       <ScrollView className="flex-1 p-2" contentContainerStyle={{ paddingBottom: 12 }}>
-        <View className="flex-row items-center p-4">
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            className="mr-4 p-2 active:bg-green-100 rounded-full"
-          >
-            <ArrowLeft size={24} className="text-gray-800" />
-          </TouchableOpacity>
-
+        <View className="flex-row items-center justify-center p-4">
           <View className="flex-row items-center">
             {league.emblem && (
               <Image

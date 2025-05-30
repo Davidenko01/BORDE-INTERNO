@@ -31,7 +31,7 @@ export default function RegisterScreen() {
   };
 
   return (
-    <View className="flex-1 justify-center items-center bg-gradient-to-b from-[#251f31] to-[#5b4c78] px-6">
+    <View className="flex-1 justify-center items-center bg-purple-950 px-6">
       <Text className="text-5xl font-extrabold text-green-400 tracking-widest mb-10 text-center drop-shadow-md">
         BORDE <Text className="text-white">INTERNO</Text>
       </Text>
