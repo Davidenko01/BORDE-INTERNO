@@ -15,12 +15,12 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Partidos } from '../types/partido';
 import NavBar from '../components/navBar';
 import { SafeAreaView } from "react-native-safe-area-context";
-
+import { DIR_IP_API } from '@env'; 
 
 async function fetchMatchData(teamId: number, competitionId: number): Promise<Partidos> {
   console.log("fetching matches");
   const response = await fetch(
-    `http://192.168.0.97:3001/api/partidos/?liga=${competitionId}&equipo=${teamId}`
+    `http://${DIR_IP_API}/api/partidos/?liga=${competitionId}&equipo=${teamId}`
   );
   if (!response.ok) throw new Error("Error al cargar los datos de la liga");
   return response.json();

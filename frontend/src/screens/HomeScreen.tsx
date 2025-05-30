@@ -5,9 +5,10 @@ import { useQuery } from "@tanstack/react-query";
 import { Liga } from "../types/liga";
 import LigaCard from "../components/ligaCard";
 import NavBar from "../components/navBar";
+import { DIR_IP_API } from '@env'; 
 
 const fetchLigas = async (): Promise<Liga[]> => {
-  const res = await fetch(`http://192.168.0.97:3001/api/ligas`);
+  const res = await fetch(`http://${DIR_IP_API}/api/ligas`);
   if (!res.ok) throw new Error("Error al obtener las ligas");
   return res.json();
 };
