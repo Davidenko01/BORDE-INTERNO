@@ -7,12 +7,13 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
   ScrollView,
-  SafeAreaView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const { width: screenWidth } = Dimensions.get("window");
 const SIDENAV_WIDTH = Math.min(280, screenWidth * 0.8); // Maximo 280px o 80%
+const NAVBAR_HEIGHT = 47;
 
 interface MenuItem {
   id: number;
@@ -28,7 +29,7 @@ interface SideNavProps {
 }
 
 export default function SideNav({ isOpen, onClose, onSignOut }: SideNavProps) {
-  const slideAnim = useRef(new Animated.Value(-SIDENAV_WIDTH)).current;
+  const slideAnim = useRef(new Animated.Value(SIDENAV_WIDTH)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
   const [isVisible, setIsVisible] = useState<boolean>(false);
   
@@ -50,7 +51,7 @@ export default function SideNav({ isOpen, onClose, onSignOut }: SideNavProps) {
     } else {
       Animated.parallel([
         Animated.timing(slideAnim, {
-          toValue: -SIDENAV_WIDTH,
+          toValue: SIDENAV_WIDTH,
           duration: 250,
           useNativeDriver: true,
         }),
@@ -102,7 +103,7 @@ export default function SideNav({ isOpen, onClose, onSignOut }: SideNavProps) {
   };
 
   return (
-    <View className="absolute inset-0 z-50" pointerEvents={isOpen ? "auto" : "none"}>
+    <SafeAreaView className="absolute inset-0 z-50" pointerEvents={isOpen ? "auto" : "none"}>
       {/* Overlay */}
       <TouchableWithoutFeedback onPress={onClose}>
         <Animated.View
@@ -115,7 +116,7 @@ export default function SideNav({ isOpen, onClose, onSignOut }: SideNavProps) {
 
       {/* Side Navigation */}
       <Animated.View
-        className="absolute left-0 top-0 bottom-0 bg-white shadow-2xl"
+        className="absolute right-0 top-0 bottom-0 bg-white shadow-2xl"
         style={{
           width: SIDENAV_WIDTH,
           transform: [{ translateX: slideAnim }],
@@ -123,7 +124,7 @@ export default function SideNav({ isOpen, onClose, onSignOut }: SideNavProps) {
       >
         <SafeAreaView className="flex-1">
           {/* Header */}
-          <View className="bg-black px-4 py-6 border-b border-gray-200">
+          <View className="bg-black px-4 border-b border-gray-200" style={{ height: NAVBAR_HEIGHT }}>
             <View className="flex-row items-center justify-between">
               <Text className="text-white text-lg font-bold">Menu</Text>
               <TouchableOpacity
@@ -180,6 +181,6 @@ export default function SideNav({ isOpen, onClose, onSignOut }: SideNavProps) {
           </View>
         </SafeAreaView>
       </Animated.View>
-    </View>
+    </SafeAreaView>
   );
 }

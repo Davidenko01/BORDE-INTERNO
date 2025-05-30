@@ -39,7 +39,7 @@ export default function NavBar() {
           activeOpacity={0.7}
         >
           <Ionicons 
-            name={isSideNavOpen ? "close" : "menu"} 
+            name="menu"
             size={24} 
             color="white" 
           />
