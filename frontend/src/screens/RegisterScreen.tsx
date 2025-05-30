@@ -31,71 +31,54 @@ export default function RegisterScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Registro</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm Password"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-      />
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Registrarse</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={styles.link}>Ya tenés cuenta? Iniciá sesión</Text>
-      </TouchableOpacity>
+    <View className="flex-1 justify-center items-center bg-gradient-to-b from-[#251f31] to-[#5b4c78] px-6">
+      <Text className="text-5xl font-extrabold text-green-400 tracking-widest mb-10 text-center drop-shadow-md">
+        BORDE <Text className="text-white">INTERNO</Text>
+      </Text>
+      <View className="bg-[#333751] w-full rounded-2xl p-6 shadow-lg max-w-md">
+        <Text className="text-3xl font-bold text-center text-[#09e984] mb-6">
+          Registro
+        </Text>
+
+        <TextInput
+          className="p-4 rounded-xl mb-4 text-white bg-[#534b6b] shadow-lg"
+          placeholder="Email"
+          placeholderTextColor="#dae9e2"
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+        />
+        <TextInput
+          className="p-4 rounded-xl mb-4 text-white bg-[#534b6b] shadow-lg"
+          placeholder="Contraseña"
+          placeholderTextColor="#dae9e2"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+        <TextInput
+          className="p-4 rounded-xl mb-6 text-white bg-[#534b6b] shadow-lg"
+          placeholder="Confirmar Contraseña"
+          placeholderTextColor="#dae9e2"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          secureTextEntry
+        />
+        <TouchableOpacity
+          className="bg-[#09e984] p-4 rounded-xl mb-4 shadow-lg"
+          onPress={handleRegister}
+        >
+          <Text className="text-black text-center font-bold text-lg">
+            Registrarse
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text className="text-center text-[#09e984] font-medium">
+            ¿Ya tenés cuenta? <Text className="underline">Iniciá sesión</Text>
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 20,
-    backgroundColor: 'white',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 15,
-  },
-  button: {
-    backgroundColor: '#28a745',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  buttonText: {
-    color: 'white',
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-  link: {
-    color: '#007bff',
-    textAlign: 'center',
-  },
-});

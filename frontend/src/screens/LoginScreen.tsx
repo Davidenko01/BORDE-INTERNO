@@ -28,7 +28,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <View className="flex-1 justify-center items-center bg-[#251f31] px-6">
+    <View className="flex-1 justify-center items-center bg-gradient-to-b from-[#251f31] to-[#5b4c78] px-6">
       <Text className="text-5xl font-extrabold text-green-400 tracking-widest mb-10 text-center drop-shadow-md">
         BORDE <Text className="text-white">INTERNO</Text>
       </Text>
@@ -38,7 +38,7 @@ export default function LoginScreen() {
         </Text>
 
         <TextInput
-          className="p-4 rounded-xl mb-4 text-black bg-[#534b6b] shadow-lg"
+          className="p-4 rounded-xl mb-4 text-white bg-[#534b6b] shadow-lg"
           placeholder="Email"
           placeholderTextColor="#dae9e2"
           value={email}
@@ -46,7 +46,7 @@ export default function LoginScreen() {
           autoCapitalize="none"
         />
         <TextInput
-          className="p-4 rounded-xl mb-6 text-black bg-[#534b6b] shadow-lg"
+          className="p-4 rounded-xl mb-6 text-white bg-[#534b6b] shadow-lg"
           placeholder="Contraseña"
           placeholderTextColor="#dae9e2"
           value={password}
