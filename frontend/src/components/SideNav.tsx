@@ -116,7 +116,7 @@ export default function SideNav({ isOpen, onClose, onSignOut }: SideNavProps) {
 
       {/* Side Navigation */}
       <Animated.View
-        className="absolute right-0 top-0 bottom-0 bg-white shadow-2xl"
+        className="absolute right-0 top-0 bottom-0 shadow-2xl"
         style={{
           width: SIDENAV_WIDTH,
           transform: [{ translateX: slideAnim }],
@@ -138,7 +138,7 @@ export default function SideNav({ isOpen, onClose, onSignOut }: SideNavProps) {
           </View>
 
           {/* Menu Content */}
-          <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+          <ScrollView className="flex-1 bg-white" showsVerticalScrollIndicator={false}>
             <View className="py-4">
               <View className="py-2">
                 {menuItems.map((item: MenuItem) => (

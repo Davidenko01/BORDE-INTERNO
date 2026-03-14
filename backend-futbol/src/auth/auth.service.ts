@@ -25,7 +25,7 @@ export class AuthService {
     const payload = { sub: user.id, email: user.email };
     return { access_token: this.jwtService.sign(payload), email: user.email };
   }
-
+  
   async login(email: string, password: string) {
     const user = await this.prisma.usuario.findUnique({ where: { email } });
     if (!user || !(await bcrypt.compare(password, user.password))) {
