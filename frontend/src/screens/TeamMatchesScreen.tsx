@@ -5,7 +5,6 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-  RefreshControl,
 } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -21,13 +20,14 @@ async function fetchMatchData(
   teamId: number,
   competitionId: number,
 ): Promise<Partidos> {
-  console.log("fetching matches");
   const response = await fetch(
     `http://${DIR_IP_API}/api/partidos/?liga=${competitionId}&equipo=${teamId}`,
   );
   if (!response.ok) throw new Error("Error al cargar los datos de la liga");
   return response.json();
 }
+
+type TabOption = "jugados" | "proximos";
 
 export default function TeamMatchesScreen() {
   const navigation =
@@ -38,7 +38,8 @@ export default function TeamMatchesScreen() {
     competitionId: number;
   };
 
-  // Fetch Partidos del equipo en la competición
+  const [activeTab, setActiveTab] = useState<TabOption>("jugados");
+
   const {
     data: matchesData,
     isLoading,
@@ -48,10 +49,8 @@ export default function TeamMatchesScreen() {
     queryKey: ["teamMatches", teamId, competitionId],
     queryFn: () => fetchMatchData(teamId, competitionId),
     refetchOnWindowFocus: false,
-    staleTime: 1000 * 60 * 5, // 5 minutos
+    staleTime: 1000 * 60 * 5,
   });
-
-  //Cuando se pulsa el boton de cargar mas
 
   if (isLoading) {
     return (
@@ -61,6 +60,7 @@ export default function TeamMatchesScreen() {
       </View>
     );
   }
+
   if (error) {
     return (
       <View className="flex-1 justify-center items-center p-4">
@@ -75,40 +75,83 @@ export default function TeamMatchesScreen() {
     );
   }
 
-  const matches = matchesData?.matches || [];
+  const allMatches = matchesData?.matches || [];
   const team = matchesData?.team;
   const competition = matchesData?.competition;
+
+  // Filtrar partidos según el tab activo
+  const now = new Date();
+  const filteredMatches = allMatches.filter((match) => {
+    const matchDate = new Date(match.date);
+    return activeTab === "jugados"
+      ? matchDate < now
+      : matchDate >= now;
+  });
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <NavBar />
+
+
+      <View className="flex-row bg-white border-b border-gray-200 px-4 pt-4">
+        <TouchableOpacity
+          onPress={() => setActiveTab("jugados")}
+          className={`flex-1 items-center pb-4 border-b-2 ${
+            activeTab === "jugados"? "border-gray-700": "border-transparent"}`}>
+          <Text className={`font-semibold text-sm ${activeTab === "jugados" ? "text-gray-700" : "text-gray-400"}`}>
+            Partidos jugados
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => setActiveTab("proximos")}
+          className={`flex-1 items-center pb-4 border-b-2 ${activeTab === "proximos" ? "border-gray-700": "border-transparent"}`}>
+          <Text className={`font-semibold text-sm ${activeTab === "proximos" ? "text-gray-700" : "text-gray-400"}`}>
+            Próximos partidos
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        {/* Header */}
         <View className="bg-white border-b border-gray-200 px-2 py-4">
           <Text className="text-2xl font-bold text-gray-900 text-center">
-            Partidos - {team || "Team"}
+            {activeTab === "jugados" ? "Partidos" : "Próximos partidos"} - {team || "Team"}
           </Text>
           <Text className="text-sm text-gray-600 text-center mt-1">
-            {competition || "Competition"} • {matches.length} matches
+            {competition || "Competition"} • {filteredMatches.length} partidos
           </Text>
         </View>
+
+        {/* Lista de partidos */}
         <View className="py-4">
-          {matches.map((match, index) => (
-            <View key={match.id || index} className="mb-4">
-              <MatchCard
-                homeTeam={{
-                  name: match.homeTeam.shortName,
-                  logo: match.homeTeam.crest,
-                  goals: match.score.home,
-                }}
-                awayTeam={{
-                  name: match.awayTeam.shortName,
-                  logo: match.awayTeam.crest,
-                  goals: match.score.away,
-                }}
-                date={match.date}
-              />
+          {filteredMatches.length === 0 ? (
+            <View className="flex-1 items-center mt-10">
+              <Text className="text-gray-400 text-base">
+                {activeTab === "jugados"
+                  ? "No hay partidos jugados"
+                  : "No hay próximos partidos"}
+              </Text>
             </View>
-          ))}
+          ) : (
+            filteredMatches.map((match, index) => (
+              <View key={match.id || index} className="mb-4">
+                <MatchCard
+                  homeTeam={{
+                    name: match.homeTeam.shortName,
+                    logo: match.homeTeam.crest,
+                    goals: match.score.home,
+                  }}
+                  awayTeam={{
+                    name: match.awayTeam.shortName,
+                    logo: match.awayTeam.crest,
+                    goals: match.score.away,
+                  }}
+                  date={match.date}
+                />
+              </View>
+            ))
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

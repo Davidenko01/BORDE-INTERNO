@@ -3,11 +3,12 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import SideNav from "./SideNav";
 import { useAuth } from "../context/AuthContext";
+import { useNavigation } from "@react-navigation/native";
 
 export default function NavBar() {
   const [isSideNavOpen, setIsSideNavOpen] = useState<boolean>(false);
   const { logout } = useAuth();
-  
+  const navigation = useNavigation();
 
   const toggleSideNav = (): void => {
     setIsSideNavOpen(!isSideNavOpen);
@@ -50,6 +51,7 @@ export default function NavBar() {
         isOpen={isSideNavOpen}
         onClose={closeSideNav}
         onSignOut={handleSignOut}
+        navigation={navigation}
       />
     </>
   );

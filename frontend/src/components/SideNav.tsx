@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {SafeAreaView} from 'react-native-safe-area-context';
+import { useNavigation } from "@react-navigation/native";
 
 const { width: screenWidth } = Dimensions.get("window");
 const SIDENAV_WIDTH = Math.min(280, screenWidth * 0.8); // Maximo 280px o 80%
@@ -19,6 +20,7 @@ interface MenuItem {
   id: number;
   title: string;
   icon: keyof typeof Ionicons.glyphMap;
+  route: string; 
   onPress: () => void;
 }
 
@@ -26,12 +28,14 @@ interface SideNavProps {
   isOpen: boolean;
   onClose: () => void;
   onSignOut: () => void;
+  navigation: any; 
 }
 
-export default function SideNav({ isOpen, onClose, onSignOut }: SideNavProps) {
+export default function SideNav({ isOpen, onClose, onSignOut, navigation }: SideNavProps) {
   const slideAnim = useRef(new Animated.Value(SIDENAV_WIDTH)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
   const [isVisible, setIsVisible] = useState<boolean>(false);
+
   
   useEffect(() => {
     if (isOpen) {
@@ -73,26 +77,30 @@ export default function SideNav({ isOpen, onClose, onSignOut }: SideNavProps) {
   const menuItems: MenuItem[] = [
     { 
       id: 1, 
-      title: "Home", 
+      title: "Menú", 
       icon: "home-outline", 
+      route: "Home",
       onPress: () => console.log("Home pressed") 
     },
     { 
       id: 2, 
       title: "Profile", 
       icon: "person-outline", 
+      route: "MenuItem",
       onPress: () => console.log("Profile pressed") 
     },
     { 
       id: 3, 
       title: "Settings", 
       icon: "settings-outline", 
+      route: "HomeScreen",
       onPress: () => console.log("Settings pressed") 
     },
     { 
       id: 4, 
       title: "Help", 
       icon: "help-circle-outline", 
+      route: "MenuItem",
       onPress: () => console.log("Help pressed") 
     },
   ];
@@ -100,6 +108,9 @@ export default function SideNav({ isOpen, onClose, onSignOut }: SideNavProps) {
   const handleMenuItemPress = (item: MenuItem): void => {
     item.onPress();
     onClose();
+    if (item.route) {
+      navigation.navigate(item.route as never);
+    }
   };
 
   return (
