@@ -16,10 +16,11 @@ import { LigaCompleta } from "../types/ligaCompleta";
 import NavBar from "../components/navBar";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/types";
+import { DIR_IP_API } from "@env";
 
 async function fetchLeagueData(id: number): Promise<LigaCompleta> {
   const response = await fetch(
-    `http://192.168.0.97:3001/api/tablas/?liga=${id}`
+    `http://${DIR_IP_API}/api/tablas/?liga=${id}` //Pide al backend una liga con un id
   );
   if (!response.ok) throw new Error("Error al cargar los datos de la liga");
   return response.json();

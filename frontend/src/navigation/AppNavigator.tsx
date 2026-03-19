@@ -9,6 +9,7 @@ import { RootStackParamList } from './types';
 import { NavigationContainer } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import TeamMatchesScreen from '../screens/TeamMatchesScreen';
+import CreateMatchScreen from '../screens/CreateMatchScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -30,6 +31,7 @@ export default function AppNavigator() {
             <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="League" component={LeagueScreen} />
             <Stack.Screen name="Matches" component={TeamMatchesScreen} />
+            <Stack.Screen name="CreateMatch" component={CreateMatchScreen} />
             </>
           ) : (
             <>

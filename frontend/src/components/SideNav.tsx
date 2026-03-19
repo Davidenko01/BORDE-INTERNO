@@ -10,6 +10,9 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {SafeAreaView} from 'react-native-safe-area-context';
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../navigation/types";
 
 const { width: screenWidth } = Dimensions.get("window");
 const SIDENAV_WIDTH = Math.min(280, screenWidth * 0.8); // Maximo 280px o 80%
@@ -32,6 +35,7 @@ export default function SideNav({ isOpen, onClose, onSignOut }: SideNavProps) {
   const slideAnim = useRef(new Animated.Value(SIDENAV_WIDTH)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
   const [isVisible, setIsVisible] = useState<boolean>(false);
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   
   useEffect(() => {
     if (isOpen) {
@@ -69,28 +73,37 @@ export default function SideNav({ isOpen, onClose, onSignOut }: SideNavProps) {
    if (!isVisible && !isOpen) {
     return null;
   }
-
+  // Variable para controlar si el usuario es administrador.
+  const isAdmin = true;
   const menuItems: MenuItem[] = [
     { 
       id: 1, 
-      title: "Home", 
+            title: "Home", 
       icon: "home-outline", 
-      onPress: () => console.log("Home pressed") 
+      onPress: () => navigation.navigate("Home") 
     },
-    { 
+    // Se muestra la opción de crear partido solo si isAdmin es true
+    ...(isAdmin ? [{ 
       id: 2, 
+      title: "Crear Partido", 
+      icon: "football-outline" as keyof typeof Ionicons.glyphMap, 
+      onPress: () => navigation.navigate("CreateMatch") 
+    }] : []),
+    { 
+      id: 3, 
+
       title: "Profile", 
       icon: "person-outline", 
       onPress: () => console.log("Profile pressed") 
     },
     { 
-      id: 3, 
+      id: 4, 
       title: "Settings", 
       icon: "settings-outline", 
       onPress: () => console.log("Settings pressed") 
     },
     { 
-      id: 4, 
+      id: 5, 
       title: "Help", 
       icon: "help-circle-outline", 
       onPress: () => console.log("Help pressed") 
