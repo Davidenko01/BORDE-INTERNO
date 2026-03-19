@@ -11,8 +11,6 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import {SafeAreaView} from 'react-native-safe-area-context';
 import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../navigation/types";
 
 const { width: screenWidth } = Dimensions.get("window");
 const SIDENAV_WIDTH = Math.min(280, screenWidth * 0.8); // Maximo 280px o 80%
@@ -22,6 +20,7 @@ interface MenuItem {
   id: number;
   title: string;
   icon: keyof typeof Ionicons.glyphMap;
+  route: string; 
   onPress: () => void;
 }
 
@@ -29,13 +28,13 @@ interface SideNavProps {
   isOpen: boolean;
   onClose: () => void;
   onSignOut: () => void;
+  navigation: any; 
 }
 
-export default function SideNav({ isOpen, onClose, onSignOut }: SideNavProps) {
+export default function SideNav({ isOpen, onClose, onSignOut, navigation }: SideNavProps) {
   const slideAnim = useRef(new Animated.Value(SIDENAV_WIDTH)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
   const [isVisible, setIsVisible] = useState<boolean>(false);
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   
   useEffect(() => {
     if (isOpen) {
@@ -78,15 +77,17 @@ export default function SideNav({ isOpen, onClose, onSignOut }: SideNavProps) {
   const menuItems: MenuItem[] = [
     { 
       id: 1, 
-            title: "Home", 
+      title: "Menú", 
       icon: "home-outline", 
-      onPress: () => navigation.navigate("Home") 
+      route: "Home",
+      onPress: () => console.log("Home pressed") 
     },
     // Se muestra la opción de crear partido solo si isAdmin es true
     ...(isAdmin ? [{ 
       id: 2, 
       title: "Crear Partido", 
-      icon: "football-outline" as keyof typeof Ionicons.glyphMap, 
+      icon: "football-outline" as keyof typeof Ionicons.glyphMap,
+      route: "CreateMatch", 
       onPress: () => navigation.navigate("CreateMatch") 
     }] : []),
     { 
@@ -94,18 +95,21 @@ export default function SideNav({ isOpen, onClose, onSignOut }: SideNavProps) {
 
       title: "Profile", 
       icon: "person-outline", 
+      route: "MenuItem",
       onPress: () => console.log("Profile pressed") 
     },
     { 
       id: 4, 
       title: "Settings", 
       icon: "settings-outline", 
+      route: "HomeScreen",
       onPress: () => console.log("Settings pressed") 
     },
     { 
       id: 5, 
       title: "Help", 
       icon: "help-circle-outline", 
+      route: "MenuItem",
       onPress: () => console.log("Help pressed") 
     },
   ];
@@ -113,6 +117,9 @@ export default function SideNav({ isOpen, onClose, onSignOut }: SideNavProps) {
   const handleMenuItemPress = (item: MenuItem): void => {
     item.onPress();
     onClose();
+    if (item.route) {
+      navigation.navigate(item.route as never);
+    }
   };
 
   return (
