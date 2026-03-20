@@ -27,6 +27,15 @@ async function fetchMatchData(
   return response.json();
 }
 
+async function fetchProximosPartidos(teamId: number, ligaId: number) {
+  const response = await fetch(
+   `http://${DIR_IP_API}/api/partidos/proximos?liga_id=${ligaId}&equipo_id=${teamId}`,
+  );
+  if (!response.ok) throw new Error("Error al cargar próximos partidos");
+  return response.json();
+}
+
+
 type TabOption = "jugados" | "proximos";
 
 export default function TeamMatchesScreen() {
@@ -40,17 +49,23 @@ export default function TeamMatchesScreen() {
 
   const [activeTab, setActiveTab] = useState<TabOption>("jugados");
 
-  const {
-    data: matchesData,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
+
+  //Solicitud API externa
+  const {data: matchesData,isLoading,isError,error,} = useQuery({
     queryKey: ["teamMatches", teamId, competitionId],
     queryFn: () => fetchMatchData(teamId, competitionId),
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 5,
   });
+
+  //Solicitud info local
+  const { data: proximosData, isLoading: isLoadingProximos } = useQuery({
+    queryKey: ["proximosPartidos", teamId, competitionId],
+    queryFn: () => fetchProximosPartidos(teamId, competitionId),
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5,
+  });
+
 
   if (isLoading) {
     return (
@@ -78,6 +93,7 @@ export default function TeamMatchesScreen() {
   const allMatches = matchesData?.matches || [];
   const team = matchesData?.team;
   const competition = matchesData?.competition;
+  const proximos = proximosData?.partidos || [];
 
   // Filtrar partidos según el tab activo
   const now = new Date();
@@ -127,7 +143,7 @@ export default function TeamMatchesScreen() {
         <View className="py-4">
           {filteredMatches.length === 0 ? (
             <View className="flex-1 items-center mt-10">
-              <Text className="text-gray-400 text-base">
+              <Text className="text-gray-400 text-base"> /*TENEMOS QUE FILTRAR POR DATA POR ACA */
                 {activeTab === "jugados"
                   ? "No hay partidos jugados"
                   : "No hay próximos partidos"}

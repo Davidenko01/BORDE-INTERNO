@@ -11,14 +11,14 @@ import { DIR_IP_API } from "@env";
 import { Liga } from "../types/liga";
 import { LigaCompleta } from "../types/ligaCompleta";
 
-const fetchLigas = async (): Promise<Liga[]> => {
-  const res = await fetch(`http://${DIR_IP_API}/api/ligas`);
+const fetchLigas = async () => {
+  const res = await fetch(`http://${DIR_IP_API}/api/partidos/proximos/ligas`);
   if (!res.ok) throw new Error("Error al obtener las ligas");
   return res.json();
 };
 
-const fetchTeamsByLeague = async (ligaId: number): Promise<LigaCompleta> => {
-  const res = await fetch(`http://${DIR_IP_API}/api/tablas/?liga=${ligaId}`);
+const fetchTeamsByLeague = async (ligaId: number) => {
+  const res = await fetch(`http://${DIR_IP_API}/api/partidos/proximos/equipos?liga_id=${ligaId}`);
   if (!res.ok) throw new Error("Error al cargar los equipos");
   return res.json();
 };
@@ -42,19 +42,19 @@ export default function CreateMatchScreen() {
   const [modalVisible, setModalVisible] = useState<'league' | 'home' | 'away' | null>(null);
 
   // Consultas a la API
-  const { data: ligas, isLoading: isLoadingLigas } = useQuery<Liga[]>({
-    queryKey: ["ligas"],
-    queryFn: fetchLigas,
+  const { data: ligas, isLoading: isLoadingLigas } = useQuery<any[]>({
+  queryKey: ["ligas-prox"],
+  queryFn: fetchLigas,
   });
 
-  const { data: leagueData, isLoading: isLoadingTeams } = useQuery<LigaCompleta>({
-    queryKey: ["leagueTeams", selectedLeagueId],
+  const { data: leagueData, isLoading: isLoadingTeams } = useQuery<any[]>({
+    queryKey: ["leagueTeams-prox", selectedLeagueId],
     queryFn: () => fetchTeamsByLeague(selectedLeagueId!),
-    enabled: !!selectedLeagueId, // Solo se ejecuta si hay una liga seleccionada
+    enabled: !!selectedLeagueId,
   });
 
   // Extraemos la lista de equipos limpiando la respuesta de la tabla
-  const teams = leagueData?.tabla?.map(t => t.team) || [];
+  const teams = leagueData || [];
 
   const onChangeDate = (event: any, selectedDate?: Date) => {
     // En Android, el calendario se cierra automáticamente, en iOS lo cerramos manualmente tras elegir
@@ -101,21 +101,29 @@ export default function CreateMatchScreen() {
       return;
     }
 
-    try {
-      // Petición POST a tu backend para guardar el partido
-      console.log("Datos del partido a crear:", {
-        leagueId: selectedLeagueId,
-        homeTeamId,
-        awayTeamId,
-        matchDate
-      });
-      
-      Alert.alert("Éxito", "Partido creado correctamente.");
-      navigation.goBack();
-    } catch (error) {
-      Alert.alert("Error", "Hubo un problema al crear el partido.");
+  try {
+    const res = await fetch(`http://${DIR_IP_API}/api/partidos/proximos`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        liga_id: selectedLeagueId,
+        equipo_local_id: homeTeamId,
+        equipo_visitante_id: awayTeamId,
+        fecha: date.toISOString(),
+      }),
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      Alert.alert("Error", error.error || "No se pudo crear el partido.");
+      return;
     }
-  };
+
+    Alert.alert("Éxito", "Partido creado correctamente.");
+  } catch (error) {
+    Alert.alert("Error", "Hubo un problema al crear el partido.");
+  }
+};
 
   // Función para renderizar el contenido dinámico del Modal (Ligas o Equipos)
   const renderModalContent = () => {
@@ -143,7 +151,7 @@ export default function CreateMatchScreen() {
               keyExtractor={(item: any) => item.id.toString()}
               showsVerticalScrollIndicator={false}
               renderItem={({ item }: { item: any }) => {
-                const itemName = isLeagueModal ? item.name : item.shortName;
+              const itemName = isLeagueModal ? item.name : item.nombre_corto;
                 return (
                   <TouchableOpacity 
                     className="p-4 border-b border-gray-100 flex-row items-center"
@@ -166,8 +174,8 @@ export default function CreateMatchScreen() {
                       setModalVisible(null);
                     }}
                   >
-                    {!isLeagueModal && item.crest && (
-                      <Image source={{ uri: item.crest }} className="w-8 h-8 mr-4" resizeMode="contain" />
+                    {!isLeagueModal &&  item.escudo && (
+                      <Image source={{ uri: item.escudo }} className="w-8 h-8 mr-4" resizeMode="contain" />
                     )}
                     <Text className="text-lg text-gray-800">{itemName}</Text>
                   </TouchableOpacity>
