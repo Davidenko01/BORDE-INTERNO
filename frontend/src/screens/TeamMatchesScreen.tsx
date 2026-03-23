@@ -29,7 +29,7 @@ async function fetchMatchData(
 
 async function fetchProximosPartidos(teamId: number, ligaId: number) {
   const response = await fetch(
-   `http://${DIR_IP_API}/api/partidos/proximos?liga_id=${ligaId}&equipo_id=${teamId}`,
+   `http://${DIR_IP_API}/api/partidos/proximos?equipo_id=${teamId}`
   );
   if (!response.ok) throw new Error("Error al cargar próximos partidos");
   return response.json();
@@ -93,7 +93,8 @@ export default function TeamMatchesScreen() {
   const allMatches = matchesData?.matches || [];
   const team = matchesData?.team;
   const competition = matchesData?.competition;
-  const proximos = proximosData?.partidos || [];
+  // Extraemos los partidos anidados dentro del arreglo "ligas"
+  const proximos = proximosData?.ligas?.[0]?.partidos || [];
 
   // Filtrar partidos según el tab activo
   const now = new Date();
@@ -141,33 +142,57 @@ export default function TeamMatchesScreen() {
 
         {/* Lista de partidos */}
         <View className="py-4">
-          {filteredMatches.length === 0 ? (
+          {activeTab === "jugados" && filteredMatches.length === 0 && (
             <View className="flex-1 items-center mt-10">
-              <Text className="text-gray-400 text-base"> /*TENEMOS QUE FILTRAR POR DATA POR ACA */
-                {activeTab === "jugados"
-                  ? "No hay partidos jugados"
-                  : "No hay próximos partidos"}
+              <Text className="text-gray-400 text-base">
+                No hay partidos jugados
               </Text>
             </View>
-          ) : (
-            filteredMatches.map((match, index) => (
-              <View key={match.id || index} className="mb-4">
+          )}
+
+          {activeTab === "proximos" && proximos.length === 0 && (
+            <View className="flex-1 items-center mt-10">
+              <Text className="text-gray-400 text-base">
+                No hay próximos partidos
+              </Text>
+            </View>
+          )}
+
+          {activeTab === "jugados" && filteredMatches.map((match, index) => (
+            <View key={match.id || index} className="mb-4">
+              <MatchCard
+                homeTeam={{
+                  name: match.homeTeam.shortName,
+                  logo: match.homeTeam.crest,
+                  goals: match.score.home,
+                }}
+                awayTeam={{
+                  name: match.awayTeam.shortName,
+                  logo: match.awayTeam.crest,
+                  goals: match.score.away,
+                }}
+                date={match.date}
+              />
+            </View>
+          ))}
+
+          {activeTab === "proximos" && proximos.map((match: any, index: number) => (
+              <View key={match.partido_id || index} className="mb-4">
                 <MatchCard
                   homeTeam={{
-                    name: match.homeTeam.shortName,
-                    logo: match.homeTeam.crest,
-                    goals: match.score.home,
+                    name: match.equipo_local?.nombre,
+                    logo: match.equipo_local?.escudo,
+                    goals: null as any,
                   }}
                   awayTeam={{
-                    name: match.awayTeam.shortName,
-                    logo: match.awayTeam.crest,
-                    goals: match.score.away,
+                    name: match.equipo_visitante?.nombre,
+                    logo: match.equipo_visitante?.escudo,
+                    goals: null as any,
                   }}
-                  date={match.date}
+                  date={match.fecha}
                 />
               </View>
-            ))
-          )}
+          ))}
         </View>
       </ScrollView>
     </SafeAreaView>

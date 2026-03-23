@@ -3,8 +3,9 @@ import { View, Text, Image } from 'react-native';
 import { MatchCardProps } from '../types/partido';
 
 const MatchCard = ({ homeTeam, awayTeam, date }: MatchCardProps) => {
-  const homeWins = homeTeam.goals > awayTeam.goals;
-  const awayWins = awayTeam.goals > homeTeam.goals;
+  const hasScore = homeTeam.goals != null && awayTeam.goals != null;
+  const homeWins = hasScore && homeTeam.goals > awayTeam.goals;
+  const awayWins = hasScore && awayTeam.goals > homeTeam.goals;
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -57,7 +58,7 @@ const MatchCard = ({ homeTeam, awayTeam, date }: MatchCardProps) => {
         {/* Goles Local */}
         <View className="w-12 items-center">
           <Text className="text-xl font-bold text-gray-900">
-            {homeTeam.goals}
+            {homeTeam.goals ?? ''}
           </Text>
         </View>
 
@@ -74,7 +75,7 @@ const MatchCard = ({ homeTeam, awayTeam, date }: MatchCardProps) => {
         {/* Goles Visitante */}
         <View className="w-12 items-center">
           <Text className="text-xl font-bold text-gray-900">
-            {awayTeam.goals}
+            {awayTeam.goals ?? ''}
           </Text>
         </View>
 
