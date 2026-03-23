@@ -22,7 +22,7 @@ export class AuthService {
     const hashed = await bcrypt.hash(password, 10);
     const user = await this.prisma.usuario.create({ data: { email, password: hashed } });
   
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.email, role: user.role };
     return { access_token: this.jwtService.sign(payload), email: user.email };
   }
   
@@ -31,7 +31,7 @@ export class AuthService {
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException('Credenciales inválidas');
     }
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.email, role: user.role };
     //firma payload con el ID y el correo, retorna token de acceso
     return { access_token: this.jwtService.sign(payload) };
   }

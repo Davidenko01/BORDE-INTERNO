@@ -11,6 +11,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import {SafeAreaView} from 'react-native-safe-area-context';
 import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "../context/AuthContext";
 
 const { width: screenWidth } = Dimensions.get("window");
 const SIDENAV_WIDTH = Math.min(280, screenWidth * 0.8); // Maximo 280px o 80%
@@ -35,6 +36,7 @@ export default function SideNav({ isOpen, onClose, onSignOut, navigation }: Side
   const slideAnim = useRef(new Animated.Value(SIDENAV_WIDTH)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
   const [isVisible, setIsVisible] = useState<boolean>(false);
+  const { user } = useAuth();
   
   useEffect(() => {
     if (isOpen) {
@@ -72,8 +74,10 @@ export default function SideNav({ isOpen, onClose, onSignOut, navigation }: Side
    if (!isVisible && !isOpen) {
     return null;
   }
-  // Variable para controlar si el usuario es administrador.
-  const isAdmin = true;
+
+  // Validamos si el usuario es administrador basado en su información
+  const isAdmin = user?.role === 'admin'; 
+
   const menuItems: MenuItem[] = [
     { 
       id: 1, 
