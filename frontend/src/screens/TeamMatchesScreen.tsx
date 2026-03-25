@@ -180,12 +180,12 @@ export default function TeamMatchesScreen() {
               <View key={match.partido_id || index} className="mb-4">
                 <MatchCard
                   homeTeam={{
-                    name: match.equipo_local?.nombre,
+                    name: match.equipo_local?.nombre_corto,
                     logo: match.equipo_local?.escudo,
                     goals: null as any,
                   }}
                   awayTeam={{
-                    name: match.equipo_visitante?.nombre,
+                    name: match.equipo_visitante?.nombre_corto,
                     logo: match.equipo_visitante?.escudo,
                     goals: null as any,
                   }}
