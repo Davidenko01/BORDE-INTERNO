@@ -39,6 +39,12 @@ export default function CreateMatchScreen() {
   const [matchDate, setMatchDate] = useState("");
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
+  
+
+  const [matchTime, setMatchTime] = useState("");           //horario
+  const [time, setTime] = useState(new Date());
+  const [showTimePicker, setShowTimePicker] = useState(false);
+ 
   const [modalVisible, setModalVisible] = useState<'league' | 'home' | 'away' | null>(null);
 
   // Consultas a la API
@@ -79,8 +85,27 @@ export default function CreateMatchScreen() {
     }
   };
 
+  const onChangeTime = (event: any, selectedTime?: Date) => {
+    if (Platform.OS === 'android') {
+      setShowTimePicker(false);
+    }
+
+    if (event.type === "set" && selectedTime) {
+      setTime(selectedTime);                                                        //horario
+      const hours = String(selectedTime.getHours()).padStart(2, '0');
+      const minutes = String(selectedTime.getMinutes()).padStart(2, '0');
+      setMatchTime(`${hours}:${minutes}`);
+
+      if (Platform.OS === 'ios') {
+        setShowTimePicker(false);
+      }
+    } else if (event.type === "dismissed") {
+      setShowTimePicker(false);
+    }
+  };
+
   const createMatch = async () => {
-    if (!selectedLeagueId || !homeTeamId || !awayTeamId || !matchDate) {
+    if (!selectedLeagueId || !homeTeamId || !awayTeamId || !matchDate || !matchTime) { // !matchTime
       Alert.alert("Error", "Por favor, completa todos los campos.");
       return;
     }
@@ -93,14 +118,15 @@ export default function CreateMatchScreen() {
     // Reiniciamos las horas a 0 para comparar únicamente las fechas (días)
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const selectedDateObj = new Date(date);
-    selectedDateObj.setHours(0, 0, 0, 0);
 
-    if (selectedDateObj <= today) {
+    const combinedDateTime = new Date(date);
+    combinedDateTime.setHours(time.getHours(), time.getMinutes(), 0, 0);
+
+    if (combinedDateTime <= today) {
       Alert.alert("Error", "La fecha del partido debe ser posterior a la fecha actual.");
       return;
     }
-
+    
   try {
     const res = await fetch(`http://${DIR_IP_API}/api/partidos/proximos`, {
       method: "POST",
@@ -109,7 +135,7 @@ export default function CreateMatchScreen() {
         liga_id: selectedLeagueId,
         equipo_local_id: homeTeamId,
         equipo_visitante_id: awayTeamId,
-        fecha: date.toISOString(),
+        fecha: combinedDateTime.toISOString(),
       }),
     });
 
@@ -233,16 +259,39 @@ export default function CreateMatchScreen() {
             </Text>
           </TouchableOpacity>
 
-          <Text className="text-gray-700 font-medium mb-2">Fecha del Partido</Text>
+          <Text className="text-gray-700 font-medium mb-2"> Fecha del Partido </Text>
           <TouchableOpacity 
-            className="bg-gray-100 p-4 rounded-xl mb-8"
+            className="bg-gray-100 p-4 rounded-xl mb-4"
             onPress={() => setShowPicker(true)}
           >
             <Text className={matchDate ? "text-gray-900" : "text-gray-400"}>
               {matchDate || "Seleccionar en el calendario"}
             </Text>
           </TouchableOpacity>
+          
+         
+          <Text className="text-gray-700 font-medium mb-2"> Horario del Partido </Text>
+          
+          <TouchableOpacity 
+            className="bg-gray-100 p-4 rounded-xl mb-8"
+            onPress={() => setShowTimePicker(true)}
+          >
+            <Text className={matchTime ? "text-gray-900" : "text-gray-400"}>
+              {matchTime || "Seleccionar horario"}
+            </Text>
+          </TouchableOpacity>
 
+          {showTimePicker && (
+            <DateTimePicker                                                           //Cambios de horario
+              value={time}
+              mode="time"
+              display="default"
+              is24Hour={true}
+              onChange={onChangeTime}
+            />
+          )}
+
+          
           {showPicker && (
             <DateTimePicker
               value={date}
@@ -254,9 +303,7 @@ export default function CreateMatchScreen() {
           )}
 
           <TouchableOpacity
-            className="bg-green-500 p-4 rounded-xl items-center shadow-sm"
-            onPress={createMatch}
-          >
+            className="bg-green-500 p-4 rounded-xl items-center shadow-sm" onPress={createMatch}>
             <Text className="text-white font-bold text-lg">Guardar Partido</Text>
           </TouchableOpacity>
         </View>

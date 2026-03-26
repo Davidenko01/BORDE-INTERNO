@@ -110,6 +110,7 @@ export default function TeamMatchesScreen() {
       <NavBar />
 
 
+
       <View className="flex-row bg-white border-b border-gray-200 px-4 pt-4">
         <TouchableOpacity
           onPress={() => setActiveTab("jugados")}
@@ -130,17 +131,21 @@ export default function TeamMatchesScreen() {
       </View>
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+    
+
         {/* Header */}
+
         <View className="bg-white border-b border-gray-200 px-2 py-4">
           <Text className="text-2xl font-bold text-gray-900 text-center">
             {activeTab === "jugados" ? "Partidos" : "Próximos partidos"} - {team || "Team"}
           </Text>
           <Text className="text-sm text-gray-600 text-center mt-1">
-            {competition || "Competition"} • {filteredMatches.length} partidos
-          </Text>
+            {competition || "Competition"}</Text>
         </View>
 
+
         {/* Lista de partidos */}
+
         <View className="py-4">
           {activeTab === "jugados" && filteredMatches.length === 0 && (
             <View className="flex-1 items-center mt-10">
@@ -150,6 +155,7 @@ export default function TeamMatchesScreen() {
             </View>
           )}
 
+
           {activeTab === "proximos" && proximos.length === 0 && (
             <View className="flex-1 items-center mt-10">
               <Text className="text-gray-400 text-base">
@@ -157,6 +163,7 @@ export default function TeamMatchesScreen() {
               </Text>
             </View>
           )}
+
 
           {activeTab === "jugados" && filteredMatches.map((match, index) => (
             <View key={match.id || index} className="mb-4">
@@ -175,6 +182,8 @@ export default function TeamMatchesScreen() {
               />
             </View>
           ))}
+
+
 
           {activeTab === "proximos" && proximos.map((match: any, index: number) => (
               <View key={match.partido_id || index} className="mb-4">
