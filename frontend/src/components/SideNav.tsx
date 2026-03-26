@@ -94,28 +94,6 @@ export default function SideNav({ isOpen, onClose, onSignOut, navigation }: Side
       route: "CreateMatch", 
       onPress: () => navigation.navigate("CreateMatch") 
     }] : []),
-    { 
-      id: 3, 
-
-      title: "Profile", 
-      icon: "person-outline", 
-      route: "MenuItem",
-      onPress: () => console.log("Profile pressed") 
-    },
-    { 
-      id: 4, 
-      title: "Settings", 
-      icon: "settings-outline", 
-      route: "HomeScreen",
-      onPress: () => console.log("Settings pressed") 
-    },
-    { 
-      id: 5, 
-      title: "Help", 
-      icon: "help-circle-outline", 
-      route: "MenuItem",
-      onPress: () => console.log("Help pressed") 
-    },
   ];
 
   const handleMenuItemPress = (item: MenuItem): void => {
@@ -163,12 +141,12 @@ export default function SideNav({ isOpen, onClose, onSignOut, navigation }: Side
 
           {/* Menu Content */}
           <ScrollView className="flex-1 bg-white" showsVerticalScrollIndicator={false}>
-            <View className="py-4">
+            <View className="py-6">
               <View className="py-2">
                 {menuItems.map((item: MenuItem) => (
                   <TouchableOpacity
                     key={item.id}
-                    className="flex-row items-center px-4 py-4 active:bg-gray-50"
+                    className="flex-row items-center px-5 py-5 mb-1 active:bg-gray-50"
                     onPress={() => handleMenuItemPress(item)}
                     activeOpacity={0.7}
                   >
@@ -181,11 +159,11 @@ export default function SideNav({ isOpen, onClose, onSignOut, navigation }: Side
               </View>
 
               {/* Divider */}
-              <View className="border-t border-gray-200 my-2" />
+              <View className="border-t border-gray-200 my-3" />
 
               {/* Sign Out */}
               <TouchableOpacity
-                className="flex-row items-center px-4 py-4 active:bg-red-50"
+                className="flex-row items-center px-5 py-5 active:bg-red-50"
                 onPress={onSignOut}
                 activeOpacity={0.7}
               >
