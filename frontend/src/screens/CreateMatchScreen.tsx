@@ -8,8 +8,7 @@ import { RootStackParamList } from "../navigation/types";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useQuery } from "@tanstack/react-query";
 import { DIR_IP_API } from "@env";
-import { Liga } from "../types/liga";
-import { LigaCompleta } from "../types/ligaCompleta";
+
 
 const fetchLigas = async () => {
   const res = await fetch(`http://${DIR_IP_API}/api/partidos/proximos/ligas`);
@@ -27,6 +26,7 @@ export default function CreateMatchScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   
   // Estados para el formulario
+
   const [selectedLeagueId, setSelectedLeagueId] = useState<number | null>(null);
   const [selectedLeagueName, setSelectedLeagueName] = useState("");
 
@@ -41,7 +41,7 @@ export default function CreateMatchScreen() {
   const [showPicker, setShowPicker] = useState(false);
   
 
-  const [matchTime, setMatchTime] = useState("");           //horario
+  const [matchTime, setMatchTime] = useState("");          
   const [time, setTime] = useState(new Date());
   const [showTimePicker, setShowTimePicker] = useState(false);
  
@@ -53,15 +53,18 @@ export default function CreateMatchScreen() {
   queryFn: fetchLigas,
   });
 
+
   const { data: leagueData, isLoading: isLoadingTeams } = useQuery<any[]>({
     queryKey: ["leagueTeams-prox", selectedLeagueId],
     queryFn: () => fetchTeamsByLeague(selectedLeagueId!),
     enabled: !!selectedLeagueId,
   });
 
+
   // Extraemos la lista de equipos limpiando la respuesta de la tabla
   const teams = leagueData || [];
 
+  //Función interactiva para mostrar efecto de fecha elegida y registrar la misma. Solamente se puede utilizar desde teléfono  
   const onChangeDate = (event: any, selectedDate?: Date) => {
     // En Android, el calendario se cierra automáticamente, en iOS lo cerramos manualmente tras elegir
     if (Platform.OS === 'android') {
@@ -85,13 +88,14 @@ export default function CreateMatchScreen() {
     }
   };
 
+ //Función interactiva para mostrar efecto de horario y registrar el mismo. Solamente se puede utilizar desde teléfono   
   const onChangeTime = (event: any, selectedTime?: Date) => {
     if (Platform.OS === 'android') {
       setShowTimePicker(false);
     }
 
     if (event.type === "set" && selectedTime) {
-      setTime(selectedTime);                                                        //horario
+      setTime(selectedTime);                                                        
       const hours = String(selectedTime.getHours()).padStart(2, '0');
       const minutes = String(selectedTime.getMinutes()).padStart(2, '0');
       setMatchTime(`${hours}:${minutes}`);
@@ -104,8 +108,9 @@ export default function CreateMatchScreen() {
     }
   };
 
-  const createMatch = async () => {
-    if (!selectedLeagueId || !homeTeamId || !awayTeamId || !matchDate || !matchTime) { // !matchTime
+  //Función para crear el partido  
+  const createMatch = async () => { 
+    if (!selectedLeagueId || !homeTeamId || !awayTeamId || !matchDate || !matchTime) { 
       Alert.alert("Error", "Por favor, completa todos los campos.");
       return;
     }
@@ -126,8 +131,9 @@ export default function CreateMatchScreen() {
       Alert.alert("Error", "La fecha del partido debe ser posterior a la fecha actual.");
       return;
     }
-    
+
   try {
+    //Endpoint utilizado para registrar el partido
     const res = await fetch(`http://${DIR_IP_API}/api/partidos/proximos`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -222,6 +228,7 @@ export default function CreateMatchScreen() {
           Crear Próximo Partido
         </Text>
 
+        {/*Eleccion de la liga*/ }
         <View className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
           <Text className="text-gray-700 font-medium mb-2">Liga</Text>
           <TouchableOpacity 
@@ -232,7 +239,8 @@ export default function CreateMatchScreen() {
               {selectedLeagueName || "Seleccionar Liga"}
             </Text>
           </TouchableOpacity>
-
+          
+          {/*Eleccion del equipo local*/ }
           <Text className="text-gray-700 font-medium mb-2">Equipo Local</Text>
           <TouchableOpacity 
             className="bg-gray-100 p-4 rounded-xl mb-4"
@@ -246,6 +254,7 @@ export default function CreateMatchScreen() {
             </Text>
           </TouchableOpacity>
 
+          {/*Eleccion del equipo visitante*/ }
           <Text className="text-gray-700 font-medium mb-2">Equipo Visitante</Text>
           <TouchableOpacity 
             className="bg-gray-100 p-4 rounded-xl mb-4"
@@ -259,6 +268,7 @@ export default function CreateMatchScreen() {
             </Text>
           </TouchableOpacity>
 
+          {/*Eleccion de la fecha del partido */ }
           <Text className="text-gray-700 font-medium mb-2"> Fecha del Partido </Text>
           <TouchableOpacity 
             className="bg-gray-100 p-4 rounded-xl mb-4"
@@ -269,7 +279,7 @@ export default function CreateMatchScreen() {
             </Text>
           </TouchableOpacity>
           
-         
+          {/*Eleccion del horario*/ }
           <Text className="text-gray-700 font-medium mb-2"> Horario del Partido </Text>
           
           <TouchableOpacity 
@@ -282,7 +292,7 @@ export default function CreateMatchScreen() {
           </TouchableOpacity>
 
           {showTimePicker && (
-            <DateTimePicker                                                           //Cambios de horario
+            <DateTimePicker                                                           
               value={time}
               mode="time"
               display="default"

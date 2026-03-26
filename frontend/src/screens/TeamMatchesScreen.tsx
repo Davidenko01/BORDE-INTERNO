@@ -16,6 +16,7 @@ import NavBar from "../components/navBar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { DIR_IP_API } from "@env";
 
+//Funcion para buscar los partidos jugados de un equipo a traves de la API externa 
 async function fetchMatchData(
   teamId: number,
   competitionId: number,
@@ -27,6 +28,7 @@ async function fetchMatchData(
   return response.json();
 }
 
+//Funcion para buscar los proximos partidos registrados de un equipo en el registro local
 async function fetchProximosPartidos(teamId: number, ligaId: number) {
   const response = await fetch(
    `http://${DIR_IP_API}/api/partidos/proximos?equipo_id=${teamId}`
@@ -35,19 +37,20 @@ async function fetchProximosPartidos(teamId: number, ligaId: number) {
   return response.json();
 }
 
-
+//
 type TabOption = "jugados" | "proximos";
 
+//Función exportada
 export default function TeamMatchesScreen() {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const route = useRoute();
-  const { teamId, competitionId } = route.params as {
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+    const route = useRoute();
+    const { teamId, competitionId } = route.params as {
     teamId: number;
     competitionId: number;
   };
 
   const [activeTab, setActiveTab] = useState<TabOption>("jugados");
+
 
 
   //Solicitud API externa
@@ -57,6 +60,7 @@ export default function TeamMatchesScreen() {
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 5,
   });
+
 
   //Solicitud info local
   const { data: proximosData, isLoading: isLoadingProximos } = useQuery({
@@ -93,7 +97,9 @@ export default function TeamMatchesScreen() {
   const allMatches = matchesData?.matches || [];
   const team = matchesData?.team;
   const competition = matchesData?.competition;
-  // Extraemos los partidos anidados dentro del arreglo "ligas"
+
+  // Extraemos los partidos anidados dentro del arreglo "ligas utilizado en json"
+
   const proximos = proximosData?.ligas?.[0]?.partidos || [];
 
   // Filtrar partidos según el tab activo
@@ -101,6 +107,7 @@ export default function TeamMatchesScreen() {
   const filteredMatches = allMatches.filter((match) => {
     const matchDate = new Date(match.date);
     return activeTab === "jugados"
+      //Solo buscamos los partidos jugados con fecha menor o igual a la fecha actual  
       ? matchDate < now
       : matchDate >= now;
   });
@@ -108,8 +115,6 @@ export default function TeamMatchesScreen() {
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <NavBar />
-
-
 
       <View className="flex-row bg-white border-b border-gray-200 px-4 pt-4">
         <TouchableOpacity
